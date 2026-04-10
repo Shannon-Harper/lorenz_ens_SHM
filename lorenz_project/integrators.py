@@ -1,9 +1,10 @@
+# integrators.py
 """Numerical integration methods for ODE systems."""
 import numpy as np
 
 
 def euler_step(state, tendency_fn, dt):
-    """
+    """Advance one step using Forward Euler.
 
     Parameters
     ----------
@@ -18,12 +19,19 @@ def euler_step(state, tendency_fn, dt):
     -------
     np.ndarray
         State at the next time step.
+
+    Hint
+    ----
+    This is one line: y_{n+1} = y_n + f(y_n) * dt
     """
+    # TODO: implement Forward Euler formula
     return state + tendency_fn(state) * dt
+
+    pass
 
 
 def integrate(state0, tendency_fn, dt, n_steps):
-    """
+    """Integrate an ODE system forward in time using Forward Euler (or any time stepping method!).
 
     Parameters
     ----------
@@ -41,16 +49,38 @@ def integrate(state0, tendency_fn, dt, n_steps):
     np.ndarray
         Trajectory array, shape (n_steps + 1, n_vars).
         Row 0 is the initial condition, row -1 is the final state.
+
+    Hint
+    ----
+    1. Pre-allocate: trajectory = np.zeros((n_steps + 1, len(state0)))
+    2. Set trajectory[0] = state0
+    3. Loop from 0 to n_steps-1, filling trajectory[i+1] using euler_step
     """
-    trajectory = np.zeros((n_steps + 1, len(state0)))
+    # TODO: implement the integration loop
+    state0 = np.asarray(state0)
+    n_varbs = state0.size
+
+    trajectory = np.zeros((n_steps + 1, n_varbs))
     trajectory[0] = state0
+
+    state = state0.copy()
     for i in range(n_steps):
-        trajectory[i + 1] = euler_step(trajectory[i], tendency_fn, dt)
+        state = euler_step(state, tendency_fn, dt)
+        trajectory[i+1] = state
+    
     return trajectory
+    pass
 
 
 if __name__ == "__main__":
-    # Self-test: exponential decay dy/dt = -y, y(0) = 1
+    # ── Test your code! ──────────────────────────────────────────────
+    # Run this file directly:  python -m lorenz_project.integrators
+    # If your implementations are correct, it should print
+    # "integrators.py: all checks passed!" with no AssertionError.
+    #
+    # Test: exponential decay  dy/dt = -y,  y(0) = 1
+    # Exact solution at t=1 is e^{-1} ≈ 0.3679
+    # Forward Euler with dt=0.01, 100 steps should get close.s
     result = integrate(np.array([1.0]), lambda y: -y, dt=0.01, n_steps=100)
     final = result[-1, 0]
     exact = np.exp(-1.0)

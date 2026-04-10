@@ -1,3 +1,4 @@
+# plotting.py
 """Plotting utilities for Lorenz63 ensemble experiments."""
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,10 +19,17 @@ def plot_attractor(ax, trajectory, color="steelblue", alpha=0.3, linewidth=0.5):
         Line transparency.
     linewidth : float
         Line width.
+
+    Hint
+    ----
+    trajectory[:, 0] is x, trajectory[:, 2] is z.
+    Use ax.plot(x, z, ...) for the butterfly view.
     """
+    # TODO: plot x vs z
     x = trajectory[:, 0]
     z = trajectory[:, 2]
     ax.plot(x, z, color=color, alpha=alpha, linewidth=linewidth)
+    pass
 
 
 def plot_ensemble(ax, ensemble_trajectories, reference_trajectory=None,
@@ -43,34 +51,29 @@ def plot_ensemble(ax, ensemble_trajectories, reference_trajectory=None,
     ref_color : str
         Color for the reference attractor.
     title : str, optional
-        Panel title.
+        Panel title (e.g., "(a) Left lobe" or "(b) Saddle region").
+
+    Hint
+    ----
+    1. If reference_trajectory is provided, call plot_attractor() for it
+       with low alpha to draw the background butterfly.
+    2. Loop over ensemble members: for i in range(ensemble_trajectories.shape[0]):
+       and call plot_attractor() for each member with ensemble_color and higher alpha.
+    3. Set title, labels, aspect ratio as desired.
     """
-    # Background attractor
+    # TODO: implement ensemble plotting
     if reference_trajectory is not None:
-        plot_attractor(ax, reference_trajectory, color=ref_color, alpha=0.25, linewidth=0.4)
+        plot_attractor(ax, reference_trajectory, color=ref_color, alpha=0.15, linewidth=0.4)
 
-    # Ensemble members
+    n_members = ensemble_trajectories.shape[0]
+    for i in range(n_members):
+        plot_attractor(ax, ensemble_trajectories[i], color=ensemble_color, alpha=0.8, linewidth=0.8)
 
-    for i in range(ensemble_trajectories.shape[0]):
-        plot_attractor(ax, ensemble_trajectories[i], color=ensemble_color, alpha=0.4, linewidth=0.7)
-
-    # print('ensemble_trajectories shape:', ensemble_trajectories.shape)  # Debug print
-    #plot the first and last points of the forecast trajectories
-    for i in range(ensemble_trajectories.shape[0]):
-        x0 = ensemble_trajectories[i, 0, 0]
-        z0 = ensemble_trajectories[i, 0, 2]
-        ax.plot(x0, z0, 'o',color=ensemble_color, alpha=0.3, markersize=2, zorder=5)
-
-    for i in range(ensemble_trajectories.shape[0]):
-        x0 = ensemble_trajectories[i, -1, 0]
-        z0 = ensemble_trajectories[i, -1, 2]
-        ax.plot(x0, z0, 'o',color=ensemble_color, alpha=0.3, markersize=2, zorder=5)
-
-    if title:
-        ax.set_title(title, fontsize=13)
     ax.set_xlabel("x")
     ax.set_ylabel("z")
-    ax.set_aspect("auto")
+    ax.set_title(title)
+    ax.set_aspect("equal", adjustable="box")    
+    pass
 
 
 def plot_ensemble_panels(ensemble_list, reference_trajectory, titles,
@@ -81,10 +84,11 @@ def plot_ensemble_panels(ensemble_list, reference_trajectory, titles,
     ----------
     ensemble_list : list of np.ndarray
         List of ensemble arrays, each shape (n_members, n_steps+1, 3).
+        One array per panel.
     reference_trajectory : np.ndarray
         Long reference trajectory for the background attractor.
     titles : list of str
-        Title for each panel.
+        Title for each panel (e.g., ["(a) Left lobe", "(b) Saddle", "(c) Right lobe"]).
     figsize : tuple
         Figure size.
     save_path : str, optional
@@ -93,11 +97,17 @@ def plot_ensemble_panels(ensemble_list, reference_trajectory, titles,
     Returns
     -------
     fig, axes
-    """
-    fig, axes = plt.subplots(1, len(ensemble_list), figsize=figsize)
 
-    if len(ensemble_list) == 1:
-        axes = [axes]
+    Hint
+    ----
+    1. fig, axes = plt.subplots(1, len(ensemble_list), figsize=figsize)
+    2. Loop: for ax, ensemble, title in zip(axes, ensemble_list, titles):
+           call plot_ensemble(ax, ensemble, reference_trajectory, title=title)
+    3. plt.tight_layout()
+    4. If save_path: plt.savefig(save_path, dpi=150, bbox_inches='tight')
+    """
+    # TODO: implement multi-panel figure
+    fig, axes = plt.subplots(1, len(ensemble_list), figsize=figsize)
 
     for ax, ensemble, title in zip(axes, ensemble_list, titles):
         plot_ensemble(ax, ensemble, reference_trajectory, title=title)
@@ -106,13 +116,17 @@ def plot_ensemble_panels(ensemble_list, reference_trajectory, titles,
 
     if save_path:
         plt.savefig(save_path, dpi=150, bbox_inches="tight")
-        print(f"Figure saved to {save_path}")
 
     return fig, axes
+    pass
 
 
 if __name__ == "__main__":
-    # Quick visual test with random data
+    # ── Test your code! ──────────────────────────────────────────────
+    # Run this file directly:  python -m lorenz_project.plotting
+    # A plot window should pop up with a random walk trajectory.
+    # If you see a line on the axes, your plot_attractor() works.
+
     fake_traj = np.cumsum(np.random.randn(500, 3) * 0.5, axis=0)
     fig, ax = plt.subplots()
     plot_attractor(ax, fake_traj)

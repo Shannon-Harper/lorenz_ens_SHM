@@ -1,27 +1,41 @@
-# lorenz_ens
+# lorenz-project-shmc5205
 
-Lorenz63 ensemble predictability experiment for ATOC 4815/5815.
+Lorenz63 model integration and ensemble analysis for ATOC 4815/5815.  
+This package implements the Lorenz‑63 dynamical system, simple numerical integration tools, ensemble forecasting, and plotting utilities.  
+It also exposes a command‑line tool, **`run-lorenz`**, which generates an ensemble predictability figure.
 
-## Usage
+---
 
-Without installing:
+## Installation
 
 ```bash
-python run.py
+pip install lorenz-project-shmc5205
 ```
 
-After packaging (lab exercise):
+Or from source:
 
 ```bash
+git clone https://github.com/Shannon-Harper/lorenz_ens_SHM.git
+cd lorenz_ens_SHM
 pip install -e .
-run-lorenz
 ```
 
-Both generate `lorenz_ensemble_predictability.png`.
+## Quick Start
 
-## Files
+```python
+from lorenz_project import Lorenz63
 
-- `lorenz63.py` — Lorenz63 model class
-- `integrators.py` — Forward Euler integrator
-- `plotting.py` — Ensemble visualization
-- `run_lorenz_ensemble.py` — Driver script
+model = Lorenz63(sigma=10, rho=28, beta=8/3)
+trajectory = model.run([1, 1, 1], dt=0.01, n_steps=5000)
+```
+
+## Command Line
+
+```bash
+run-lorenz    # generates lorenz_ensemble_predictability.png
+
+```
+
+## License
+
+MIT
